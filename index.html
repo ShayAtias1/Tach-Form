@@ -451,117 +451,178 @@
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
+  <!-- ⬅ להוסיף מתחת: ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script>
-    // אנימציות GSAP
-    gsap.from(".card", {
-      duration: 0.9,
-      y: 30,
-      opacity: 0,
-      ease: "power3.out"
-    });
+  // רישום הפלאגין
+  gsap.registerPlugin(ScrollTrigger);
 
-    gsap.from(".bg-circle", {
-      duration: 1.5,
-      opacity: 0,
-      scale: 0.7,
-      ease: "power2.out"
-    });
+  // אנימציית כניסה כללית
+  gsap.from(".card", {
+    duration: 0.9,
+    y: 30,
+    opacity: 0,
+    ease: "power3.out"
+  });
 
-    gsap.from(".brand-row", {
-      duration: 0.8,
-      x: 20,
+  gsap.from(".bg-circle", {
+    duration: 1.5,
+    opacity: 0,
+    scale: 0.7,
+    ease: "power2.out"
+  });
+
+  gsap.from(".brand-row", {
+    duration: 0.8,
+    x: 20,
+    opacity: 0,
+    ease: "power2.out",
+    delay: 0.1
+  });
+
+  gsap.from(".hero-title", {
+    duration: 0.9,
+    y: 20,
+    opacity: 0,
+    ease: "power2.out",
+    delay: 0.2
+  });
+
+  gsap.from([".hero-sub", ".pill"], {
+    duration: 0.9,
+    y: 10,
+    opacity: 0,
+    ease: "power2.out",
+    delay: 0.3,
+    stagger: 0.1
+  });
+
+  // ✨ 1) אנימציה לכל form-group כשזה נכנס ל־viewport (ScrollTrigger)
+  gsap.utils.toArray(".form-group").forEach((group, i) => {
+    gsap.from(group, {
+      scrollTrigger: {
+        trigger: group,
+        start: "top 80%",  // מתי להתחיל (80% מגובה המסך)
+        toggleActions: "play none none none"
+      },
+      y: 24,
       opacity: 0,
+      duration: 0.6,
       ease: "power2.out",
-      delay: 0.1
+      delay: i === 0 ? 0.3 : 0 // הראשון קצת אחרי ההירו
     });
+  });
 
-    gsap.from(".hero-title", {
-      duration: 0.9,
-      y: 20,
-      opacity: 0,
-      ease: "power2.out",
-      delay: 0.2
-    });
+  // ✨ 2) מיקרו-אינטראקציה בשדות – פוקוס מבליט את ה־form-group
+  const inputs = document.querySelectorAll(
+    ".form-group input, .form-group textarea"
+  );
 
-    gsap.from(".hero-sub, .pill", {
-      duration: 0.9,
-      y: 10,
-      opacity: 0,
-      ease: "power2.out",
-      delay: 0.3,
-      stagger: 0.1
-    });
-
-    gsap.from(".form-group", {
-      duration: 0.7,
-      y: 16,
-      opacity: 0,
-      ease: "power2.out",
-      delay: 0.45,
-      stagger: 0.12
-    });
-
-    gsap.from(".submit-wrap", {
-      duration: 0.8,
-      y: 16,
-      opacity: 0,
-      ease: "power2.out",
-      delay: 0.9
-    });
-
-    // שליחת טופס (כמו שהיה אצלך)
-    document.getElementById("tachForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const webhookUrl = "YOUR_MAKE_WEBHOOK_URL_HERE"; // תחליף ב־Webhook שלך
-      const form = e.target;
-      const submitButton = form.querySelector(".submit-button");
-      const originalText = submitButton.textContent.trim();
-      const messageDiv = document.getElementById("message");
-
-      submitButton.textContent = "שולח...";
-      submitButton.style.opacity = "0.7";
-      submitButton.disabled = true;
-      messageDiv.textContent = "";
-      messageDiv.className = "";
-
-      const formData = new FormData(form);
-      const payload = {};
-      const services = [];
-
-      formData.forEach((value, key) => {
-        if (key === "services[]") {
-          services.push(value);
-        } else {
-          payload[key] = value;
-        }
+  inputs.forEach((el) => {
+    el.addEventListener("focus", () => {
+      const wrapper = el.closest(".form-group");
+      gsap.to(wrapper, {
+        duration: 0.2,
+        backgroundColor: "rgba(255,255,255,0.02)",
+        borderColor: "rgba(255,119,34,0.4)",
+        ease: "power2.out"
       });
-      payload.services = services.join(", ");
+    });
 
-      try {
-        const response = await fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+    el.addEventListener("blur", () => {
+      const wrapper = el.closest(".form-group");
+      gsap.to(wrapper, {
+        duration: 0.25,
+        backgroundColor: "transparent",
+        borderColor: "rgba(255,255,255,0.03)",
+        ease: "power2.out"
+      });
+    });
+  });
 
-        if (response.ok) {
-          messageDiv.textContent = "✔ קיבלנו! הטופס נשלח בהצלחה.";
-          messageDiv.className = "success";
-          form.reset();
-        } else {
-          messageDiv.textContent = "⚠️ שגיאה בשליחה. אפשר לנסות שוב או לפנות אלינו ישירות.";
-          messageDiv.className = "error";
-        }
-      } catch (err) {
-        messageDiv.textContent = "⚠️ תקלת רשת – אם זה חוזר על עצמו, דברו איתנו.";
-        messageDiv.className = "error";
-      } finally {
-        submitButton.textContent = originalText;
-        submitButton.style.opacity = "1";
-        submitButton.disabled = false;
+  // ✨ 3) אנימציית כפתור וקארד בעת שליחה
+  const form = document.getElementById("tachForm");
+  const messageDiv = document.getElementById("message");
+  const card = document.querySelector(".card");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const webhookUrl = "YOUR_MAKE_WEBHOOK_URL_HERE"; // תחליף ל־Webhook שלך
+    const submitButton = form.querySelector(".submit-button");
+    const originalText = submitButton.textContent.trim();
+
+    submitButton.textContent = "שולח...";
+    submitButton.style.opacity = "0.7";
+    submitButton.disabled = true;
+    messageDiv.textContent = "";
+    messageDiv.className = "";
+
+    const formData = new FormData(form);
+    const payload = {};
+    const services = [];
+
+    formData.forEach((value, key) => {
+      if (key === "services[]") {
+        services.push(value);
+      } else {
+        payload[key] = value;
       }
     });
-  </script>
+    payload.services = services.join(", ");
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        // ✨ אנימציה: הטופס נעלם בעדינות, הודעת תודה נכנסת
+        gsap.to(form, {
+          duration: 0.4,
+          y: -10,
+          opacity: 0,
+          ease: "power2.in",
+          onComplete: () => {
+            form.style.display = "none";
+            messageDiv.textContent = "✔ קיבלנו! הטופס נשלח בהצלחה, ונחזור אליכם עם סיכום וצעדים הבאים.";
+            messageDiv.className = "success";
+
+            gsap.fromTo(
+              messageDiv,
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
+            );
+          }
+        });
+      } else {
+        // שגיאה מהשרת
+        messageDiv.textContent = "⚠️ שגיאה בשליחה. אפשר לנסות שוב או לפנות אלינו ישירות.";
+        messageDiv.className = "error";
+
+        // ויברציה קלה לכפתור
+        gsap.fromTo(
+          submitButton,
+          { x: 0 },
+          { x: 6, duration: 0.08, yoyo: true, repeat: 4, ease: "power1.inOut" }
+        );
+      }
+    } catch (err) {
+      messageDiv.textContent = "⚠️ תקלת רשת – אם זה חוזר על עצמו, דברו איתנו.";
+      messageDiv.className = "error";
+      gsap.fromTo(
+        submitButton,
+        { x: 0 },
+        { x: 6, duration: 0.08, yoyo: true, repeat: 4, ease: "power1.inOut" }
+      );
+    } finally {
+      submitButton.textContent = originalText;
+      submitButton.style.opacity = "1";
+      submitButton.disabled = false;
+    }
+  });
+</script>
 </body>
 </html>
