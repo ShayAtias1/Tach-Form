@@ -548,7 +548,7 @@
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const webhookUrl = "YOUR_MAKE_WEBHOOK_URL_HERE"; // תחליף ל־Webhook שלך
+    const webhookUrl = "YOUR_MAKE_WEBHOOK_URL_HERE"; // תחליף ל־Webhook שלך ב-Make
     const submitButton = form.querySelector(".submit-button");
     const originalText = submitButton.textContent.trim();
 
@@ -579,30 +579,13 @@
       });
 
       if (response.ok) {
-        // ✨ אנימציה: הטופס נעלם בעדינות, הודעת תודה נכנסת
-        gsap.to(form, {
-          duration: 0.4,
-          y: -10,
-          opacity: 0,
-          ease: "power2.in",
-          onComplete: () => {
-            form.style.display = "none";
-            messageDiv.textContent = "✔ קיבלנו! הטופס נשלח בהצלחה, ונחזור אליכם עם סיכום וצעדים הבאים.";
-            messageDiv.className = "success";
-
-            gsap.fromTo(
-              messageDiv,
-              { opacity: 0, y: 20 },
-              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
-            );
-          }
-        });
+        // ✅ שליחה הצליחה – מפנים לדף תודה
+        window.location.href = "thanks.html";
+        return;
       } else {
-        // שגיאה מהשרת
         messageDiv.textContent = "⚠️ שגיאה בשליחה. אפשר לנסות שוב או לפנות אלינו ישירות.";
         messageDiv.className = "error";
 
-        // ויברציה קלה לכפתור
         gsap.fromTo(
           submitButton,
           { x: 0 },
