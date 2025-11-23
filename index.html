@@ -10,7 +10,7 @@
     :root {
       --bg: #05070b;
       --card-bg: #0f1218;
-      --accent: #ff7722; /* כתום Tach לפי מה שהגדרת */
+      --accent: #ff7722; /* כתום Tach */
       --text-main: #f4f3f0;
       --text-muted: #b7b3ac;
       --border: #262a33;
@@ -451,139 +451,145 @@
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <!-- ⬅ להוסיף מתחת: ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script>
-  // רישום הפלאגין
-  gsap.registerPlugin(ScrollTrigger);
+    // רישום הפלאגין
+    gsap.registerPlugin(ScrollTrigger);
 
-  // אנימציית כניסה כללית
-  gsap.from(".card", {
-    duration: 0.9,
-    y: 30,
-    opacity: 0,
-    ease: "power3.out"
-  });
-
-  gsap.from(".bg-circle", {
-    duration: 1.5,
-    opacity: 0,
-    scale: 0.7,
-    ease: "power2.out"
-  });
-
-  gsap.from(".brand-row", {
-    duration: 0.8,
-    x: 20,
-    opacity: 0,
-    ease: "power2.out",
-    delay: 0.1
-  });
-
-  gsap.from(".hero-title", {
-    duration: 0.9,
-    y: 20,
-    opacity: 0,
-    ease: "power2.out",
-    delay: 0.2
-  });
-
-  gsap.from([".hero-sub", ".pill"], {
-    duration: 0.9,
-    y: 10,
-    opacity: 0,
-    ease: "power2.out",
-    delay: 0.3,
-    stagger: 0.1
-  });
-
-  // ✨ 1) אנימציה לכל form-group כשזה נכנס ל־viewport (ScrollTrigger)
-  gsap.utils.toArray(".form-group").forEach((group, i) => {
-    gsap.from(group, {
-      scrollTrigger: {
-        trigger: group,
-        start: "top 80%",  // מתי להתחיל (80% מגובה המסך)
-        toggleActions: "play none none none"
-      },
-      y: 24,
+    // אנימציית כניסה כללית
+    gsap.from(".card", {
+      duration: 0.9,
+      y: 30,
       opacity: 0,
-      duration: 0.6,
+      ease: "power3.out"
+    });
+
+    gsap.from(".bg-circle", {
+      duration: 1.5,
+      opacity: 0,
+      scale: 0.7,
+      ease: "power2.out"
+    });
+
+    gsap.from(".brand-row", {
+      duration: 0.8,
+      x: 20,
+      opacity: 0,
       ease: "power2.out",
-      delay: i === 0 ? 0.3 : 0 // הראשון קצת אחרי ההירו
+      delay: 0.1
     });
-  });
 
-  // ✨ 2) מיקרו-אינטראקציה בשדות – פוקוס מבליט את ה־form-group
-  const inputs = document.querySelectorAll(
-    ".form-group input, .form-group textarea"
-  );
+    gsap.from(".hero-title", {
+      duration: 0.9,
+      y: 20,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.2
+    });
 
-  inputs.forEach((el) => {
-    el.addEventListener("focus", () => {
-      const wrapper = el.closest(".form-group");
-      gsap.to(wrapper, {
-        duration: 0.2,
-        backgroundColor: "rgba(255,255,255,0.02)",
-        borderColor: "rgba(255,119,34,0.4)",
-        ease: "power2.out"
+    gsap.from([".hero-sub", ".pill"], {
+      duration: 0.9,
+      y: 10,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.3,
+      stagger: 0.1
+    });
+
+    // ✨ 1) אנימציה לכל form-group בגלילה
+    gsap.utils.toArray(".form-group").forEach((group, i) => {
+      gsap.from(group, {
+        scrollTrigger: {
+          trigger: group,
+          start: "top 80%",
+          toggleActions: "play none none none"
+        },
+        y: 24,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: i === 0 ? 0.3 : 0
       });
     });
 
-    el.addEventListener("blur", () => {
-      const wrapper = el.closest(".form-group");
-      gsap.to(wrapper, {
-        duration: 0.25,
-        backgroundColor: "transparent",
-        borderColor: "rgba(255,255,255,0.03)",
-        ease: "power2.out"
-      });
-    });
-  });
+    // ✨ 2) מיקרו-אינטראקציה בשדות
+    const inputs = document.querySelectorAll(".form-group input, .form-group textarea");
 
-  // ✨ 3) אנימציית כפתור וקארד בעת שליחה
-  const form = document.getElementById("tachForm");
-  const messageDiv = document.getElementById("message");
-  const card = document.querySelector(".card");
-
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const webhookUrl = "YOUR_MAKE_WEBHOOK_URL_HERE"; // תחליף ל־Webhook שלך ב-Make
-    const submitButton = form.querySelector(".submit-button");
-    const originalText = submitButton.textContent.trim();
-
-    submitButton.textContent = "שולח...";
-    submitButton.style.opacity = "0.7";
-    submitButton.disabled = true;
-    messageDiv.textContent = "";
-    messageDiv.className = "";
-
-    const formData = new FormData(form);
-    const payload = {};
-    const services = [];
-
-    formData.forEach((value, key) => {
-      if (key === "services[]") {
-        services.push(value);
-      } else {
-        payload[key] = value;
-      }
-    });
-    payload.services = services.join(", ");
-
-    try {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+    inputs.forEach((el) => {
+      el.addEventListener("focus", () => {
+        const wrapper = el.closest(".form-group");
+        gsap.to(wrapper, {
+          duration: 0.2,
+          backgroundColor: "rgba(255,255,255,0.02)",
+          borderColor: "rgba(255,119,34,0.4)",
+          ease: "power2.out"
+        });
       });
 
-      if (response.ok) {
-        // ✅ שליחה הצליחה – מפנים לדף תודה
-        window.location.href = "thanks.html";
-        return;
-      } else {
-        messageDiv.textContent = "⚠️ שגיאה בשליחה. אפשר לנסות שוב או לפנות אלינו ישירות.";
+      el.addEventListener("blur", () => {
+        const wrapper = el.closest(".form-group");
+        gsap.to(wrapper, {
+          duration: 0.25,
+          backgroundColor: "transparent",
+          borderColor: "rgba(255,255,255,0.03)",
+          ease: "power2.out"
+        });
+      });
+    });
+
+    // ✨ 3) שליחת טופס + הפניה לדף תודה
+    const form = document.getElementById("tachForm");
+    const messageDiv = document.getElementById("message");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const webhookUrl = "YOUR_MAKE_WEBHOOK_URL_HERE"; // תחליף ל־Webhook שלך
+      const submitButton = form.querySelector(".submit-button");
+      const originalText = submitButton.textContent.trim();
+
+      submitButton.textContent = "שולח...";
+      submitButton.style.opacity = "0.7";
+      submitButton.disabled = true;
+      messageDiv.textContent = "";
+      messageDiv.className = "";
+
+      const formData = new FormData(form);
+      const payload = {};
+      const services = [];
+
+      formData.forEach((value, key) => {
+        if (key === "services[]") {
+          services.push(value);
+        } else {
+          payload[key] = value;
+        }
+      });
+      payload.services = services.join(", ");
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          // ✅ שליחה הצליחה – מפנים לדף תודה
+          window.location.href = "thanks.html";
+          return;
+        } else {
+          messageDiv.textContent = "⚠️ שגיאה בשליחה. אפשר לנסות שוב או לפנות אלינו ישירות.";
+          messageDiv.className = "error";
+
+          gsap.fromTo(
+            submitButton,
+            { x: 0 },
+            { x: 6, duration: 0.08, yoyo: true, repeat: 4, ease: "power1.inOut" }
+          );
+        }
+      } catch (err) {
+        messageDiv.textContent = "⚠️ תקלת רשת – אם זה חוזר על עצמו, דברו איתנו.";
         messageDiv.className = "error";
 
         gsap.fromTo(
@@ -591,21 +597,12 @@
           { x: 0 },
           { x: 6, duration: 0.08, yoyo: true, repeat: 4, ease: "power1.inOut" }
         );
+      } finally {
+        submitButton.textContent = originalText;
+        submitButton.style.opacity = "1";
+        submitButton.disabled = false;
       }
-    } catch (err) {
-      messageDiv.textContent = "⚠️ תקלת רשת – אם זה חוזר על עצמו, דברו איתנו.";
-      messageDiv.className = "error";
-      gsap.fromTo(
-        submitButton,
-        { x: 0 },
-        { x: 6, duration: 0.08, yoyo: true, repeat: 4, ease: "power1.inOut" }
-      );
-    } finally {
-      submitButton.textContent = originalText;
-      submitButton.style.opacity = "1";
-      submitButton.disabled = false;
-    }
-  });
-</script>
+    });
+  </script>
 </body>
 </html>
