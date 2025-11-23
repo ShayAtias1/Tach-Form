@@ -1,384 +1,567 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tach | אפיון פרויקט</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoIF2fNfD0d0K+iY0C1H4Jg9O13A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        :root {
-            --bg-color: #0d0d0d;
-            --text-color: #f0f0f0; 
-            --accent-color: #FF7722; 
-            --glow-color-blue: #00FFFF; 
-            --glow-color-orange: #FF7722; 
-            --grid-color: rgba(60, 60, 60, 0.4); 
-            --container-bg: #121212;
-            --border-color: #333;
-            --input-bg: #1a1a1a;
-            --button-dark: #cc5500; 
-            --button-light: #ff8833; 
-        }
-        body {
-            color: var(--text-color);
-            font-family: 'Rubik', sans-serif;
-            
-            display: grid;
-            place-items: center; 
-            min-height: 100vh; 
-            margin: 0;
-            padding: 20px 0;
-            position: relative;
-            /* וודא שקובץ התמונה הזה נמצא באותה תיקייה כמו ה-HTML */
-            background-image: url('WhatsApp Image 2025-11-20 at 12.55.04.jpeg'); 
-            background-color: var(--bg-color); 
-            background-size: cover; 
-            background-position: center center;
-            background-attachment: fixed;
-            overflow-x: hidden; /* מונע גלילה אופקית מכל מקום */
-            
-            perspective: 1000px;
-            transform-style: preserve-3d; 
-        }
-        
-        /* ------------------- אפקטי רקע ------------------- */
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to right, transparent 1px, transparent 1px, var(--grid-color) 1px, transparent 1px), linear-gradient(to bottom, transparent 1px, transparent 1px, var(--grid-color) 1px, transparent 1px);
-            background-size: 50px 50px; opacity: 0.3; z-index: -1; pointer-events: none;
-        }
-        .floating-glow { position: fixed; background: radial-gradient(circle at center, var(--glow-color-blue) 0%, transparent 60%); opacity: 0.15; filter: blur(80px); animation: floatGlow 20s infinite alternate ease-in-out; width: 300px; height: 300px; border-radius: 50%; z-index: -2; pointer-events: none; }
-        .floating-glow.two { background: radial-gradient(circle at center, var(--glow-color-orange) 0%, transparent 60%); animation-delay: 5s; }
-        @keyframes floatGlow { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, 30px) scale(1.05); } 100% { transform: translate(0, 0) scale(1); } }
-        
-        /* קווים אלכסוניים */
-        @keyframes diagonalGlowUpRight {
-            0% { transform: translate(-10vw, 110vh) rotate(-45deg); opacity: 0; }
-            50% { opacity: 0.2; }
-            100% { transform: translate(110vw, -10vh) rotate(-45deg); opacity: 0; }
-        }
-        @keyframes diagonalGlowUpLeft {
-            0% { transform: translate(110vw, 110vh) rotate(45deg); opacity: 0; }
-            40% { opacity: 0.7; } 
-            100% { transform: translate(-10vw, -10vh) rotate(45deg); opacity: 0; }
-        }
-        .diagonal-trail {
-            position: fixed; width: 4px; height: 150px; 
-            pointer-events: none; z-index: -1; 
-            filter: drop-shadow(0 0 5px var(--glow-color-blue)); 
-        }
-        .trail-a { background: linear-gradient(to bottom, transparent, var(--glow-color-blue), transparent); animation: diagonalGlowUpRight 15s linear infinite; left: 5%; top: 0; }
-        .trail-b { background: linear-gradient(to bottom, transparent, var(--glow-color-blue), transparent); animation: diagonalGlowUpRight 18s linear infinite; animation-delay: 6s; left: 60%; top: 0; }
-        .trail-c { background: linear-gradient(to bottom, transparent, var(--glow-color-orange), transparent); filter: drop-shadow(0 0 5px var(--glow-color-orange)); animation: diagonalGlowUpLeft 12s linear infinite; animation-delay: 2s; right: 5%; top: 0; }
-        .trail-d { background: linear-gradient(to bottom, transparent, var(--glow-color-orange), transparent); filter: drop-shadow(0 0 5px var(--glow-color-orange)); animation: diagonalGlowUpLeft 16s linear infinite; animation-delay: 9s; right: 40%; top: 0; }
-        
-        /* קוד רץ */
-        .code-snippet {
-            position: fixed;
-            color: rgba(0, 255, 255, 0.4); 
-            font-size: 0.9rem;
-            opacity: 0;
-            z-index: 5;
-            transition: opacity 1.5s ease;
-            white-space: nowrap; 
-            font-family: monospace; 
-            animation: fadeInOut 12s infinite ease-in-out;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tach | אפיון פרויקט</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
-        .code-snippet.two { color: rgba(255, 119, 34, 0.4); animation-duration: 15s; }
-        .code-snippet.three { color: rgba(0, 255, 255, 0.5); animation-duration: 9s; }
-        .code-snippet.four { color: rgba(255, 119, 34, 0.5); animation-duration: 18s; }
+  <style>
+    :root {
+      --bg: #05070b;
+      --card-bg: #0f1218;
+      --accent: #ff7722; /* כתום Tach לפי מה שהגדרת */
+      --text-main: #f4f3f0;
+      --text-muted: #b7b3ac;
+      --border: #262a33;
+      --input-bg: #11141c;
+    }
 
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(10px); }
-            10% { opacity: 0.7; transform: translateY(0); }
-            90% { opacity: 0.7; }
-            100% { opacity: 0; transform: translateY(-10px); }
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        /* ------------------- קוביית הטופס (Container) ------------------- */
-        @keyframes rotateBorder { to { --angle: 360deg; } }
-        @property --angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Rubik", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top left, #151a24 0, #05070b 55%, #020309 100%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 12px;
+    }
 
-        .container {
-            max-width: 700px; 
-            width: 90%; 
-            padding: 40px; 
-            text-align: right; 
-            border-radius: 12px;
-            /* צלליות זוהרות (קצת פחות קיצוניות) */
-            box-shadow: 0 0 10px rgba(255, 119, 34, 0.5), 0 0 30px rgba(0, 255, 255, 0.3), 0 0 50px rgba(0, 0, 0, 0.9);
-            position: relative; z-index: 10;
-            overflow: hidden; 
-            
-            box-sizing: border-box; /* 🟢 תיקון: כולל פדדינג וגבולות ברוחב הכולל */
-            
-            transform-style: preserve-3d; 
-            transition: transform 0.2s ease-out;
-            margin: 0; 
+    .bg-circle {
+      position: fixed;
+      inset: auto auto 5% 5%;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255,119,34,0.25), transparent 65%);
+      filter: blur(4px);
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-            border: 1px solid transparent; 
-            --border-size: 3px; 
-            --angle: 0deg;
-            background-image: conic-gradient(from var(--angle), transparent 20%, var(--glow-color-blue), transparent 80%);
-            animation: rotateBorder 4s linear infinite; 
-            background-origin: border-box; 
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100% 100%;
-            border-radius: 12px; 
-            position: relative; 
-        }
-        .container::before { 
-            content: ''; position: absolute; inset: 0; 
-            background-color: var(--container-bg);
-            border-radius: 12px; z-index: -1; 
-            padding: var(--border-size); margin: calc(-1 * var(--border-size)); 
-        }
-        
-        /* ------------------- שדות קלט (יישור לימין) ------------------- */
-        input[type="text"], input[type="email"], input[type="tel"], textarea, select { 
-            width: 75%; 
-            background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); 
-            padding: 12px 15px; font-size: 1.1rem; transition: border-color 0.3s ease, box-shadow 0.3s ease; 
-            outline: none; font-family: inherit; resize: vertical; text-align: right; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-            display: block; 
-            margin: 0 0 10px auto; 
-        }
-        
-        @keyframes focusPulse {
-            0% { box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.2); } 
-            50% { box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.3); } 
-            100% { box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.2); }
-        }
-        input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus, select:focus { 
-            border-color: var(--glow-color-blue); background-color: #222;
-            box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.2); 
-            animation: focusPulse 1.5s infinite alternate ease-in-out; 
-        }
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 780px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.6));
+      border-radius: 18px;
+      padding: 32px 28px 36px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow:
+        0 24px 70px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(255,255,255,0.03);
+      backdrop-filter: blur(18px);
+    }
 
-        /* ------------------- קוביות בחירה (יישור לימין) ------------------- */
-        .checkbox-group, .radio-group { 
-            width: 75%; 
-            margin: 0 0 0 auto; 
-            display: flex; flex-direction: column; gap: 10px; 
-        }
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
 
-        .checkbox-group label, .radio-group label { 
-            display: flex; align-items: center; color: var(--text-color); font-size: 1rem; margin-bottom: 0; cursor: pointer; font-weight: 400; 
-            background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 15px; 
-            transition: background-color 0.3s ease, border-color 0.3s ease; position: relative; 
-        }
-        .checkbox-group input[type="checkbox"], .radio-group input[type="radio"] { 
-            appearance: none; -webkit-appearance: none; width: 20px; height: 20px; 
-            border: 2px solid var(--border-color); 
-            border-radius: 4px; margin-left: 15px; position: relative; cursor: pointer; flex-shrink: 0; 
-        }
-        .radio-group input[type="radio"] { border-radius: 50%; }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .checkbox-group input[type="checkbox"]:checked, .radio-group input[type="radio"]:checked { 
-            border-color: var(--accent-color); 
-            background-color: var(--accent-color); 
-        }
-        .checkbox-group input[type="checkbox"]:checked::after, .radio-group input[type="radio"]:checked::after { 
-            content: '✔'; 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            color: var(--bg-color); font-size: 14px; font-weight: bold; 
-        }
-        
-        /* ------------------- כפתור שליחה ------------------- */
-        .submit-button { 
-            background: var(--accent-color); 
-            color: var(--text-color); 
-            border: none; 
-            padding: 14px 40px; 
-            font-size: 1.25rem; 
-            font-weight: bold; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            display: block; 
-            text-align: center; 
-            margin: 50px auto 0 auto; 
-            transition: background-color 0.2s ease; 
-            position: relative; 
-            overflow: hidden; 
-        }
-        .submit-button:hover { 
-            background: var(--button-dark); 
-        }
-        .submit-button::after, .submit-button::before { content: none !important; }
-        
-        /* ------------------- Media Query - תיקון כפוי אחרון (Tach 51.0) ------------------- */
-        @media (max-width: 768px) {
-             /* 🟢 התיקונים המכריעים לקונטיינר */
-            .container {
-                padding: 15px 10px; /* פדדינג עוד יותר צר בצדדים */
-                width: 95%; /* נותנים מרווח גדול יותר בצדדים */
-                /* הקטנת ה-box-shadow כדי שלא יחרוג מהמסך */
-                box-shadow: 0 0 5px rgba(255, 119, 34, 0.4), 0 0 15px rgba(0, 255, 255, 0.2), 0 0 30px rgba(0, 0, 0, 0.8);
-            }
-            
-            /* 🔴 הכפייה המכריעה: צמצום כל שדות הקלט וקבוצות הבחירה ל-90% */
-             input[type="text"], input[type="email"], input[type="tel"], textarea, select, .checkbox-group, .radio-group { 
-                /* במצב רגיל הגדרנו 100%, אבל זה רחב מדי יחסית ל-Container */
-                width: 90%; 
-                margin: 0 auto 10px auto; /* מרכוז */
-            }
-            
-            /* הקטנת כותרות ופונטים */
-            .logo-text { font-size: 1.5rem; } 
-            h2 { font-size: 0.9rem; } 
-            label { font-size: 1.05rem; } 
-            
-            .submit-button { 
-                width: 80%; 
-                font-size: 1.1rem; 
-                padding: 10px 25px; 
-            }
-        }
-        
-        /* ------------------- CSS ליבה (ללא שינוי) ------------------- */
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
-        .logo-img { max-width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; 
-            margin: 0 auto 15px auto; border: 3px solid var(--accent-color); box-shadow: 0 0 10px var(--accent-color); 
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        } 
-        .logo-text { font-weight: 700; color: var(--text-color); margin-top: -10px; position: relative; display: table; margin: -10px auto 0 auto; animation: glitchEffect 8s infinite linear alternate; font-size: 2.2rem; }
-        .logo-text span { color: var(--accent-color); }
-        .logo-text::before, .logo-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
-        .logo-text::before { left: 2px; text-shadow: -2px 0 var(--accent-color); clip: rect(44px, 450px, 56px, 0); animation: glitch-anim-1 2s infinite alternate-reverse; }
-        .logo-text::after { left: -2px; text-shadow: -2px 0 var(--glow-color-blue); clip: rect(65px, 450px, 80px, 0); animation: glitch-anim-2 3s infinite alternate-reverse; }
-        @keyframes glitch-anim-1 { 0% { clip: rect(74px, 450px, 14px, 0); } 2% { clip: rect(65px, 450px, 82px, 0); } 4% { clip: rect(22px, 450px, 94px, 0); } 6% { clip: rect(87px, 450px, 34px, 0); } 8% { clip: rect(48px, 450px, 60px, 0); } 10% { clip: rect(0, 450px, 100px, 0); } }
-        @keyframes glitch-anim-2 { 0% { clip: rect(31px, 450px, 15px, 0); } 2% { clip: rect(89px, 450px, 63px, 0); } 4% { clip: rect(34px, 450px, 58px, 0); } 6% { clip: rect(10px, 450px, 70px, 0); } 8% { clip: rect(52px, 450px, 79px, 0); } 10% { clip: rect(0, 450px, 100px, 0); } }
-        
-        h2 { font-weight: 300; margin-bottom: 20px; opacity: 0.8; font-size: 1.1rem; text-align: center; line-height: 1.4; }
-        .form-group { margin-bottom: 35px; padding-bottom: 15px; }
-        label { display: block; margin-bottom: 10px; font-size: 1.2rem; font-weight: 500; color: var(--accent-color); }
+    .brand-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
 
-    </style>
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-title {
+      font-size: 1.9rem;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .hero-sub {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      max-width: 36rem;
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: rgba(255,119,34,0.06);
+      border: 1px solid rgba(255,119,34,0.2);
+      color: var(--accent);
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    form {
+      margin-top: 6px;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .form-group:last-of-type {
+      border-bottom: none;
+      margin-bottom: 32px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .label-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      direction: rtl;
+      text-align: right;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #6c707a;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(255,119,34,0.4);
+      background-color: #151922;
+    }
+
+    .inline-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .inline-inputs input {
+      width: 100%;
+    }
+
+    .checkbox-group,
+    .radio-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(8,11,18,0.9);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+    }
+
+    .option-row:hover {
+      border-color: rgba(255,119,34,0.5);
+      transform: translateY(-1px);
+    }
+
+    .option-row input {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin: 0;
+    }
+
+    .submit-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .submit-button {
+      border: none;
+      border-radius: 999px;
+      padding: 11px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(120deg, #ff7722, #ff9b4b);
+      color: #111;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+      transition: transform 0.13s ease, box-shadow 0.13s ease, opacity 0.12s ease;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.9);
+    }
+
+    .submit-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.7);
+    }
+
+    .submit-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    #message {
+      margin-top: 14px;
+      font-size: 0.9rem;
+    }
+
+    #message.success {
+      color: #70ffb0;
+    }
+
+    #message.error {
+      color: #ff8e8e;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        padding: 24px 18px 28px;
+      }
+
+      .hero-title {
+        font-size: 1.45rem;
+      }
+
+      .inline-inputs {
+        grid-template-columns: 1fr;
+      }
+
+      .submit-wrap {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .submit-button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .header {
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
-    
-    <div class="floating-glow" style="left: 10%; top: 15%;"></div>
-    <div class="floating-glow two" style="left: 70%; top: 60%;"></div>
-    <div class="vertical-scan-line"></div>
+  <div class="bg-circle"></div>
 
-    <div class="diagonal-trail trail-a"></div>
-    <div class="diagonal-trail trail-b"></div>
-    <div class="diagonal-trail trail-c"></div>
-    <div class="diagonal-trail trail-d"></div>
-    
-    <div class="code-snippet" style="top: 10%; left: 20%; animation-delay: 1s;">console.log("Tach Initiated");</div>
-    <div class="code-snippet two" style="top: 60%; left: 85%; animation-delay: 3s;">import { dataStream } from 'core';</div>
-    <div class="code-snippet three" style="top: 30%; left: 45%; animation-delay: 5s;">const API_KEY = '****';</div>
-    <div class="code-snippet four" style="top: 80%; left: 5%; animation-delay: 7s;">$server.status(200).send(payload);</div>
-    <div class="code-snippet" style="top: 25%; left: 70%; animation-delay: 0s;">#define futuristic_design</div>
-    <div class="code-snippet two" style="top: 5%; left: 5%; animation-delay: 9s;">if (user.submit()) { return true; }</div>
+  <div class="card">
+    <header class="header">
+      <div class="brand-row">
+        <div class="brand-dot"></div>
+        <div class="brand-name">Tach</div>
+      </div>
+      <p class="pill">
+        <span class="pill-dot"></span>
+        אפיון קצר כדי לבנות את המוצר הנכון – בלי רעש מיותר
+      </p>
+      <h1 class="hero-title">בואו נבין איך לוקחים את העסק שלכם צעד קדימה.</h1>
+      <p class="hero-sub">
+        כמה שאלות ממוקדות שיעזרו לנו להבין אתכם, את הלקוחות שלכם ואת מה שנכון לבנות עבורכם.
+        זה לוקח כמה דקות, וחוסך לשני הצדדים הרבה זמן בהמשך.
+      </p>
+    </header>
 
-<div class="form-wrapper"> 
-    <div class="container" id="formContainer">
-        <div class="header">
-            <img src="https://res.cloudinary.com/dz3dbtt3u/image/upload/v1763637617/tach_logo_cubkbo.jpg" alt="Tach Logo" class="logo-img">
-            <h1 class="logo-text" data-text="נעים להכיר, Tach">נעים להכיר, <span style="color:var(--accent-color);">Tach</span></h1>
-            <h2>בואו נבין איך לוקחים את העסק שלכם צעד קדימה!</h2>
+    <form id="tachForm">
+      <!-- 1. פרטי איש קשר -->
+      <div class="form-group">
+        <label>1. פרטי איש קשר</label>
+        <p class="label-hint">כדי שנדע עם מי לסנכרן את כל מה שקורה בפרויקט.</p>
+        <div class="inline-inputs">
+          <input type="text" id="name" name="name" placeholder="שם מלא" required />
+          <input type="email" id="email" name="email" placeholder="אימייל" required />
+          <input type="tel" id="phone" name="phone" placeholder="טלפון" required />
         </div>
-        
-        <form id="tachForm">
-            
-            <div class="form-group personal-info-input">
-                <label for="name">1. פרטי איש קשר</label>
-                <input type="text" id="name" name="name" required placeholder="שם מלא">
-                <input type="email" id="email" name="email" required placeholder="אימייל" style="margin-top: 10px;">
-                <input type="tel" id="phone" name="phone" required placeholder="מספר טלפון" style="margin-top: 10px;">
-            </div>
-            <div class="form-group long-text-input">
-                <label for="pain_point">2. למה אנחנו מדברים דווקא עכשיו?</label>
-                <textarea id="pain_point" name="pain_point" rows="3" placeholder="מה האתגר הכי גדול בעסק שחשוב לכם לפתור?"></textarea>
-            </div>
-            <div class="form-group long-text-input">
-                <label for="goal">3. איפה אתם רוצים להיות בעוד שנה מהיום?</label>
-                <textarea id="goal" name="goal" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-                <label>4. איך אנחנו יכולים לעזור?</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" name="services[]" value="בניית אתר / חנות"> בניית אתר / חנות</label>
-                    <label><input type="checkbox" name="services[]" value="אוטומציה / AI"> אוטומציה / AI</label>
-                    <label><input type="checkbox" name="services[]" value="עיצוב ומיתוג"> עיצוב ומיתוג</label>
-                    <label><input type="checkbox" name="services[]" value="שיווק דיגיטלי"> שיווק דיגיטלי</label>
-                    <label><input type="checkbox" name="services[]" value="הכל ביחד"> הכל ביחד</label>
-                </div>
-            </div>
-            <div class="form-group short-input-50">
-                <label for="brand_link">5. יש אתר או מותג שאתם עפים עליו? (שימו לינק)</label>
-                <input type="text" id="brand_link" name="brand_link" placeholder="לינק למותג או אתר השראה">
-            </div>
-            <div class="form-group">
-                <label for="budget">6. מה סדר הגודל של התקציב?</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="budget" value="עד 5,000₪" required> עד 5,000₪</label>
-                    <label><input type="radio" name="budget" value="5,000₪ - 15,000₪"> 5,000₪ - 15,000₪</label>
-                    <label><input type="radio" name="budget" value="15,000₪ - 30,000₪"> 15,000₪ - 30,000₪</label>
-                    <label><input type="radio" name="budget" value="תקציב לא מוגבל"> תקציב לא מוגבל למשהו מטורף</label>
-                </div>
-            </div>
-            <div class="form-group long-text-input" style="border-bottom: none;">
-                <label for="timeline">7. מתי אתם רוצים להיות באוויר?</label>
-                <input type="text" id="timeline" name="timeline" placeholder="תאריך משוער או 'מהר ככל האפשר'">
-            </div>
+      </div>
 
-            <button type="submit" class="submit-button">
-                שלח טופס
-            </button>
-        </form>
-        <div id="message"></div>
-    </div>
-</div>
+      <!-- 2. למה עכשיו -->
+      <div class="form-group">
+        <label for="pain_point">2. למה אנחנו מדברים דווקא עכשיו?</label>
+        <p class="label-hint">מה האתגר הכי גדול שאתם מרגישים היום בעסק?</p>
+        <textarea id="pain_point" name="pain_point" rows="3"
+          placeholder="לדוגמה: האתר הנוכחי לא מייצר לידים, צריך מערכת שמרכזת את כל הלקוחות במקום אחד וכו'"></textarea>
+      </div>
 
-<script>
-    // ------------------- שליחת טופס -------------------
-    document.getElementById('tachForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const webhookUrl = 'YOUR_MAKE_WEBHOOK_URL_HERE'; // וודא שאתה מחליף את זה ב-Webhook האמיתי שלך
-        const form = e.target;
-        const submitButton = form.querySelector('.submit-button');
-        const originalText = submitButton.textContent.trim();
+      <!-- 3. יעד לשנה קדימה -->
+      <div class="form-group">
+        <label for="goal">3. איפה הייתם רוצים להיות בעוד שנה מהיום?</label>
+        <p class="label-hint">מבחינת תוצאות, תהליכים, חוויה ללקוח.</p>
+        <textarea id="goal" name="goal" rows="3" required
+          placeholder="לדוגמה: להכפיל את כמות הפניות, להעביר את כל התהליך לדיגיטל, להרגיש שליטה מלאה במספרים."></textarea>
+      </div>
 
-        submitButton.textContent = 'שולח...';
-        submitButton.disabled = true;
+      <!-- 4. איך Tach יכולה לעזור -->
+      <div class="form-group">
+        <label>4. איך לדעתכם נוכל לעזור לכם הכי הרבה?</label>
+        <p class="label-hint">אפשר לבחור כמה אפשרויות.</p>
+        <div class="checkbox-group">
+          <label class="option-row">
+            <input type="checkbox" name="services[]" value="בניית אתר / חנות" />
+            <span>בניית אתר / חנות</span>
+          </label>
+          <label class="option-row">
+            <input type="checkbox" name="services[]" value="אוטומציה / AI" />
+            <span>אוטומציה / AI ותהליכים אוטומטיים</span>
+          </label>
+          <label class="option-row">
+            <input type="checkbox" name="services[]" value="עיצוב ומיתוג" />
+            <span>עיצוב ומיתוג דיגיטלי</span>
+          </label>
+          <label class="option-row">
+            <input type="checkbox" name="services[]" value="שיווק דיגיטלי" />
+            <span>שיווק דיגיטלי ופרפורמנס</span>
+          </label>
+          <label class="option-row">
+            <input type="checkbox" name="services[]" value="הכל ביחד" />
+            <span>חבילת הכל־יחד – בואו נדבר על משהו גדול</span>
+          </label>
+        </div>
+      </div>
 
-        const formData = new FormData(form);
-        const payload = {};
-        const services = [];
-        formData.forEach((value, key) => {
-            if (key === 'services[]') { services.push(value); } 
-            else { payload[key] = value; }
-        });
-        payload['services'] = services.join(', ');
+      <!-- 5. השראות -->
+      <div class="form-group">
+        <label for="brand_link">5. יש אתר או מותג שאתם עפים עליו?</label>
+        <p class="label-hint">לינק אחד או כמה – זה עוזר לנו להבין את הטעם שלכם.</p>
+        <input
+          type="text"
+          id="brand_link"
+          name="brand_link"
+          placeholder="לדוגמה: https://example.com או שם של מותג שאתם אוהבים"
+        />
+      </div>
 
-        try {
-            const response = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const messageDiv = document.getElementById('message');
-            messageDiv.style.display = 'block';
-            if (response.ok) { 
-                messageDiv.textContent = '✔ קיבלנו! הטופס נשלח בהצלחה.'; 
-                form.reset(); 
-            } 
-            else { 
-                messageDiv.textContent = '⚠️ שגיאה בשליחה. אנא נסה שוב או פנה אלינו ישירות.'; 
-            }
-        } catch (error) {
-            document.getElementById('message').textContent = '⚠️ תקלת רשת.';
-        } finally {
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
-        }
+      <!-- 6. תקציב -->
+      <div class="form-group">
+        <label>6. מה סדר הגודל של התקציב?</label>
+        <p class="label-hint">לא ננעול אתכם על מספר – רק כדי להבין את הליגה.</p>
+        <div class="radio-group">
+          <label class="option-row">
+            <input type="radio" name="budget" value="עד 5,000₪" required />
+            <span>עד 5,000₪</span>
+          </label>
+          <label class="option-row">
+            <input type="radio" name="budget" value="5,000₪ - 15,000₪" />
+            <span>5,000₪ – 15,000₪</span>
+          </label>
+          <label class="option-row">
+            <input type="radio" name="budget" value="15,000₪ - 30,000₪" />
+            <span>15,000₪ – 30,000₪</span>
+          </label>
+          <label class="option-row">
+            <input type="radio" name="budget" value="תקציב לא מוגבל" />
+            <span>תקציב פתוח למשהו גדול ומדויק</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 7. לוחות זמנים -->
+      <div class="form-group">
+        <label for="timeline">7. מתי הייתם רוצים להיות באוויר?</label>
+        <p class="label-hint">תאריך משוער, רבעון, או סתם תחושה.</p>
+        <input
+          type="text"
+          id="timeline"
+          name="timeline"
+          placeholder="לדוגמה: רבעון ראשון 2026, או 'כמה שיותר מהר אבל מדויק'."
+        />
+      </div>
+
+      <div class="submit-wrap">
+        <button type="submit" class="submit-button">
+          שלח טופס
+          <span>↗</span>
+        </button>
+        <p class="submit-note">
+          מיד אחרי שנקבל את האפיון נעבור עליו, נסכם הכול ונתאם איתכם שיחה ממוקדת לפני יציאה לדרך.
+        </p>
+      </div>
+
+      <div id="message"></div>
+    </form>
+  </div>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <script>
+    // אנימציות GSAP
+    gsap.from(".card", {
+      duration: 0.9,
+      y: 30,
+      opacity: 0,
+      ease: "power3.out"
     });
-</script>
 
+    gsap.from(".bg-circle", {
+      duration: 1.5,
+      opacity: 0,
+      scale: 0.7,
+      ease: "power2.out"
+    });
+
+    gsap.from(".brand-row", {
+      duration: 0.8,
+      x: 20,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.1
+    });
+
+    gsap.from(".hero-title", {
+      duration: 0.9,
+      y: 20,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.2
+    });
+
+    gsap.from(".hero-sub, .pill", {
+      duration: 0.9,
+      y: 10,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.3,
+      stagger: 0.1
+    });
+
+    gsap.from(".form-group", {
+      duration: 0.7,
+      y: 16,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.45,
+      stagger: 0.12
+    });
+
+    gsap.from(".submit-wrap", {
+      duration: 0.8,
+      y: 16,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.9
+    });
+
+    // שליחת טופס (כמו שהיה אצלך)
+    document.getElementById("tachForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const webhookUrl = "YOUR_MAKE_WEBHOOK_URL_HERE"; // תחליף ב־Webhook שלך
+      const form = e.target;
+      const submitButton = form.querySelector(".submit-button");
+      const originalText = submitButton.textContent.trim();
+      const messageDiv = document.getElementById("message");
+
+      submitButton.textContent = "שולח...";
+      submitButton.style.opacity = "0.7";
+      submitButton.disabled = true;
+      messageDiv.textContent = "";
+      messageDiv.className = "";
+
+      const formData = new FormData(form);
+      const payload = {};
+      const services = [];
+
+      formData.forEach((value, key) => {
+        if (key === "services[]") {
+          services.push(value);
+        } else {
+          payload[key] = value;
+        }
+      });
+      payload.services = services.join(", ");
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          messageDiv.textContent = "✔ קיבלנו! הטופס נשלח בהצלחה.";
+          messageDiv.className = "success";
+          form.reset();
+        } else {
+          messageDiv.textContent = "⚠️ שגיאה בשליחה. אפשר לנסות שוב או לפנות אלינו ישירות.";
+          messageDiv.className = "error";
+        }
+      } catch (err) {
+        messageDiv.textContent = "⚠️ תקלת רשת – אם זה חוזר על עצמו, דברו איתנו.";
+        messageDiv.className = "error";
+      } finally {
+        submitButton.textContent = originalText;
+        submitButton.style.opacity = "1";
+        submitButton.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
